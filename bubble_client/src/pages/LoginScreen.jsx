@@ -1,6 +1,38 @@
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Store } from "../Store";
 
 const LoginScreen = () => {
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+
+    const navigate = useNavigate();
+
+    const { state, dispatch } = useContext(Store);
+    const { userInfo } = state;
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post("/users/login", {
+        email,
+        password,
+      });
+
+      dispatch({ type: "USER_SIGNIN", payload: data.token });
+      localStorage.setItem("user_token", JSON.stringify(data.token));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+   useEffect(() => {
+     if (userInfo) {
+       navigate("/");
+     }
+   }, [navigate, userInfo]);
+
   return (
     <div className="w-[100%] flex flex-col justify-center items-center h-[100%]">
       <div className="bg-[#475387] w-[95%] sm:w-[70%] md:w-[60%] lg:w-[40%] flex flex-col justify-center items-center rounded-[10px] h-[80%]">
@@ -20,6 +52,9 @@ const LoginScreen = () => {
             </svg>
 
             <input
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Email Address"
               type="text"
               className="outline-none w-[100%] h-[100%] inputStyle"
@@ -40,20 +75,26 @@ const LoginScreen = () => {
             </svg>
 
             <input
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               type="text"
               className="outline-none w-[100%] h-[100%] inputStyle"
             />
           </div>
           <div className="w-[100%]">
-            <button className="w-[100%] parenttwo h-[40px] bg-[#475387] rounded-[10px] text-[#fff]">
+            <button
+              onClick={handleLogin}
+              className="w-[100%] parenttwo h-[40px] bg-[#475387] rounded-[10px] text-[#fff]"
+            >
               Submit
             </button>
           </div>
 
           <div className="w-[100%] flex xl:flex-row flex-col items-center justify-between">
             <div className="flex items-center gap-2">
-              <input type="checkbox" name="" id="" />
+              <input name="" type="checkbox" id="" />
               <span>Keep me logged in</span>
             </div>
             <div>
@@ -99,7 +140,12 @@ const LoginScreen = () => {
             </div>
             <div className="flex flex-col lg:flex-row items-center justify-center gap-2 text-[15px]">
               <span>Don&apos;t have an account?</span>
-              <Link to={"/register"} className="text-[#475387] hover:underline font-semibold">SignUp here</Link>
+              <Link
+                to={"/register"}
+                className="text-[#475387] hover:underline font-semibold"
+              >
+                SignUp here
+              </Link>
             </div>
           </div>
         </div>

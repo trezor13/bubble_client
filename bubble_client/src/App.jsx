@@ -2,6 +2,10 @@ import "./App.css";
 import LoginScreen from "./pages/LoginScreen";
 import { Route, Routes } from "react-router-dom";
 import RegisterScreen from "./pages/RegisterScreen";
+import axios from "axios";
+
+axios.defaults.baseURL = "http://127.0.0.1:3000/api/v1";
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
